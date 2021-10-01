@@ -166,7 +166,7 @@
             '#f0b67f',
             '#d6d1b1'
         ]
-        cust_color_set = [
+        caste_color_set = [
             '#aa4465',
             '#edf0da',
             '#a89b8c',
@@ -179,7 +179,7 @@
             '#aaf683',
             '#ffd97d'
         ]
-        married_color_set = [
+        marital_color_set = [
             '#9e2b25',
             '#51355a',
             '#2a0c4e'
@@ -187,6 +187,9 @@
         barchart_color_set = ['#d72638','#3f88c5','#f49d37','#140f2d','#f22b29']
         kyc_label_set = ['approve','reject','pending','seek clarification'];
         gender_label_set = ['Male','Female','Transgender','Mixed'];
+        caste_label_set = ['st','sc','obc','general','minority'];
+        religion_label_set = ['hindu','muslim','christian','others'];
+        marital_label_set = ['married','unmarried','others'];
         kyc_barchart_label = ['Self','Shg','Mfg','Organization','Jlg'];
         main_fieldSet = ["total_kyc","self","shg","mfg","organization","jlg"];
         // main_fieldSet = ["alpha","beta","gama","delta","nano","pico","sudo","ls"];
@@ -286,14 +289,30 @@
         })
         // right drop down
         document.getElementById('filter_type').addEventListener('change',()=>{
-            
+            date_range = document.getElementById('date_range').value;
+            kyc_type = document.getElementById('kyc_type').value;
+            filter_type = document.getElementById('filter_type').value;
+            data = JSON.parse(Load_all_Data_UponFilter(date_range, kyc_type, filter_type));
+            kyc_filter_data = dataSanitize_onFilter(data);
+            if (filter_type == 'gender') {
+                RightPieChart(kyc_filter_data,gender_color_set,gender_label_set,`kyc status by ${filter_type} till ${date_range}`);
+            }
+            if (filter_type == 'caste') {
+                RightPieChart(kyc_filter_data,caste_color_set,caste_label_set,`kyc status by ${filter_type} till ${date_range}`);
+            }
+            if (filter_type == 'religion') {
+                RightPieChart(kyc_filter_data,religion_color_set,religion_label_set,`kyc status by ${filter_type} till ${date_range}`);
+            }
+            if (filter_type == 'marital_status') {
+                RightPieChart(kyc_filter_data,marital_color_set,marital_label_set,`kyc status by ${filter_type} till ${date_range}`);
+            }
         });
         // On custom data data value
         document.getElementById('check_date').addEventListener('click',(e)=>{
             const start_date = document.querySelector('#start_date').value;
             const end_date = document.querySelector('#end_date').value;
             // check if the date is empty or not
-            if ((start_date == null || start_date == '') && (end_date == null || end_date == '')) {
+            if (start_date == null || start_date == '') {
                 e.preventDefault();
                 alert('Please Select Date Range Before Click Check');
             }else{

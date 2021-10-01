@@ -161,6 +161,35 @@ function count_kyc_Status($conn,$date_range,$kyc_type_,$filter_type,$date_splite
     ];
   echo json_encode($kyc_status_data);
 }
+
+// ### count by filter of the elmeent
+function count_kyc_byFilter($conn,$date_range,$kyc_type_,$filter_type,$date_spliter=[],$start_date = "",$end_date = ""){
+  include 'flags.php';
+
+  if ($kyc_type_ == 'total_kyc' && $date_range == 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.{$filter_type} = a.{$filter_type}) as data from kyc_table a group by({$filter_type})";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($kyc_type_ != 'total_kyc' && $date_range == 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.{$filter_type} = a.{$filter_type} and kyc_type = '{$kyc_type_}') as data from kyc_table a group by({$filter_type})";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($kyc_type_ == 'total_kyc' && $date_range != 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.{$filter_type} = a.{$filter_type} and ${$date_range}) as data from kyc_table a group by({$filter_type})";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($kyc_type_ != 'total_kyc' && $date_range != 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.{$filter_type} = a.{$filter_type} and kyc_type = '{$kyc_type_}' and ${$date_range}) as data from kyc_table a group by({$filter_type})";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  
+  echo json_encode($filter_data);
+}
+
 ### Get Distinct Years of all 1.
 function get_distinct_year($conn){
   include 'flags.php';
