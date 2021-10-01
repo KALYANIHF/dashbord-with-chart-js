@@ -380,6 +380,7 @@ function Ajax_call3(
   return response;
   // console.log(data_value);
 }
+
 function Load_all_Data(
   date_range,
   kyc_type,
@@ -409,3 +410,4 @@ function Load_all_Data_UponFilter(
 ) {
   return Ajax_call3(date_range, kyc_type, filter_type);
 }
+

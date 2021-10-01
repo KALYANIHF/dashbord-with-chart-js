@@ -7,6 +7,7 @@
     <title>Kyc DashBord</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="assets/main.css">
 </head>
 <body>
@@ -15,7 +16,12 @@
         <div class="popup-content">
             <div class="close"></div>
             <div class="main-content">
+                <div id="table_heading">
 
+                </div>
+                <div id="table_content">
+                    
+                </div>
             </div>
         </div>
     </div>
@@ -155,6 +161,7 @@
     <script src="./assets/function.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script>
         AOS.init();
     </script>
@@ -338,19 +345,89 @@
     <!-- end of JS script for data manupulation -->
     <!-- close button click event -->
     <script>
+        function Ajax_call4(date_range, kyc_type, start_date = "", end_date = "") {
+            var response = $.ajax({
+                url: "getTable_data.php",
+                type: "post",
+                async: false,
+                dataType: "json",
+                data: {
+                date_range: date_range,
+                kyc_type: kyc_type,
+                start_date: start_date,
+                end_date: end_date,
+                },
+            }).responseText;
+            // console.log(typeof response);
+            return response;
+            // console.log(data_value);
+        }
+
+        function Load_all_TableData(
+            date_range,
+            kyc_type,
+            start_date = "",
+            end_date = ""
+            ) {
+            return Ajax_call4(date_range, kyc_type, filter_type);
+        }
+
         function table_heading(arg){
-            arg = arg.toUpperCase();
-            document.querySelector(".main-content").innerHTML = `
-           <h2 class="text-info table-heading">Netware ${arg} Content Table</h2>
-           <h4 id="chart-figure-type" class="type">Your Login Date and Time : ${(new Date().toLocaleString("en-US", {timeZone:"Asia/Kolkata"}))} </h4>
-           `;
+            date_range = document.getElementById('date_range').value;
+            kyc_type = arg;
+            filter_type = document.getElementById('filter_type').value;
+            data = JSON.parse(Load_all_TableData(date_range,kyc_type));
+            console.log(data);
+            document.getElementById("table_heading").innerHTML = `<h2 class="text-info table-heading">Netware ${arg} Content Table</h2>
+            <h4 id="chart-figure-type" class="type">Your Login Date and Time : ${(new Date().toLocaleString("en-US", {timeZone:"Asia/Kolkata"}))} </h4>`;
+            dynamic_tableData = '';
+            data.forEach(e => {
+                dynamic_tableData+=`
+                <tr>
+                    <td>${e.kyc_id}</td>
+                    <td>${e.kyc_type}</td>
+                    <td>${e.status}</td>
+                    <td>${e.member_name}</td>
+                    <td>${e.gender}</td>
+                    <td>${e.marital_status}</td>
+                    <td>${e.caste}</td>
+                    <td>${e.religion}</td>
+                    <td>${e.created_at}</td>
+                </tr>
+                `;
+            });
+            document.querySelector('#table_content').innerHTML = `
+            <table class="table table-striped" id="data_table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Kyc Type</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Gender</th>
+                        <th scope="col">Marital Status</th>
+                        <th scope="col">Caste</th>
+                        <th scope="col">Religion</th>
+                        <th scope="col">Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${dynamic_tableData}
+                </tbody>
+            </table>
+            `;
+            $('#data_table').DataTable({
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                "scrollY": 420,
+            });
         }
         document.querySelector('.close').addEventListener('click',()=>{
            $(".popup-box").hide();
         });
         function getID(e){
            $(".popup-box").show();
-           $(".main-content").empty();
+           $("#table_heading").empty();
+           $("#table_content").empty();
            table_heading(e.slice(0,e.length-4));
         }
     </script>

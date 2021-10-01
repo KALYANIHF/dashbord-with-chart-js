@@ -290,6 +290,15 @@ body {
 .massage_text {
   text-align: center;
 }
+
+/* data table styling */
+.paginate_button {
+  display: inline !important;
+}
+#data_table_paginate {
+  padding: 1rem 0rem 0rem;
+}
+/* data table style end */
 /* grid color code end */
 /* responsive style sheet */
 /* Extra small devices (phones, 600px and down) */

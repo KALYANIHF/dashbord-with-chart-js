@@ -270,4 +270,34 @@ function get_distinctMonth_for_12_Month($conn){
   return $result;
 }
 
+// ### define the function for the total table data
+function getTotal_TableData($conn,$date_range,$kyc_type_,$date_spliter=[],$start_date = "",$end_date = ""){
+  include 'flags.php';
+
+  if ($kyc_type_ == 'organization') {
+    $kyc_type_ = 'or';
+  }
+  
+  if ($date_range == 'ytd' && $kyc_type_ == 'total_kyc') {
+    $sql = "SELECT * FROM kyc_table";
+    $run_query = mysqli_query($conn,$sql);
+    $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($date_range == 'ytd' && $kyc_type_ != 'total_kyc') {
+    $sql = "SELECT * FROM kyc_table WHERE kyc_type = '{$kyc_type_}'";
+    $run_query = mysqli_query($conn,$sql);
+    $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($date_range !='ytd' && $kyc_type_ == 'total_kyc') {
+    $sql = "SELECT * FROM kyc_table WHERE ${$date_range}";
+    $run_query = mysqli_query($conn,$sql);
+    $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($date_range != 'ytd' && $kyc_type_ != 'total_kyc') {
+    $sql = "SELECT * FROM kyc_table WHERE kyc_type = '{$kyc_type_}' and ${$date_range}";
+    $run_query = mysqli_query($conn,$sql);
+    $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  echo json_encode($result);
+}
 ?>
