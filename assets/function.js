@@ -283,6 +283,18 @@ function dataSanitize(data) {
   return full_sanitize_data;
 }
 
+function dataSanitize_onKycType(data) {
+  kyc_status = [];
+  filter_status = [];
+  data["status"].forEach((e) => {
+    kyc_status.push(e.status);
+  });
+  data["gender"].forEach((e) => {
+    filter_status.push(e.gender);
+  });
+  return (full_sanitize_data = [kyc_status, filter_status]);
+}
+
 // ajex call functions
 // ######## all count data ########
 function Ajax_Call(
@@ -310,6 +322,31 @@ function Ajax_Call(
   // console.log(data_value);
 }
 
+// for kyc type only
+function Ajax_call2(
+  date_range,
+  kyc_type,
+  filter_type,
+  start_date = "",
+  end_date = ""
+) {
+  var response = $.ajax({
+    url: "dataload_upon_kycType.php",
+    type: "post",
+    async: false,
+    dataType: "json",
+    data: {
+      date_range: date_range,
+      kyc_type: kyc_type,
+      filter_type: filter_type,
+      start_date: start_date,
+      end_date: end_date,
+    },
+  }).responseText;
+  // console.log(typeof response);
+  return response;
+  // console.log(data_value);
+}
 function Load_all_Data(
   date_range,
   kyc_type,
@@ -318,4 +355,14 @@ function Load_all_Data(
   end_date = ""
 ) {
   return Ajax_Call(date_range, kyc_type, filter_type);
+}
+
+function Load_all_Data_UponKycStatus(
+  date_range,
+  kyc_type,
+  filter_type,
+  start_date = "",
+  end_date = ""
+) {
+  return Ajax_call2(date_range, kyc_type, filter_type);
 }

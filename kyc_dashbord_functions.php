@@ -116,6 +116,51 @@ function count_specific_kyc($conn,$date_range,$kyc_type,$filter_type,$date_split
   }
 }
 
+### function count on kyc status
+function count_kyc_Status($conn,$date_range,$kyc_type_,$filter_type,$date_spliter=[],$start_date = "",$end_date = ""){
+
+  include 'flags.php';
+  // first query
+  
+  if ($kyc_type_ == 'total_kyc' && $date_range == 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.status = a.status) as status from kyc_table a group by(status)";
+    $run_query = mysqli_query($conn,$sql);
+    $status_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.gender = a.gender) as gender from kyc_table a group by(gender)";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($kyc_type_ != 'total_kyc' && $date_range == 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.status = a.status and kyc_type = '{$kyc_type_}') as status from kyc_table a group by(status)";
+    $run_query = mysqli_query($conn,$sql);
+    $status_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.gender = a.gender and kyc_type = '{$kyc_type_}') as gender from kyc_table a group by(gender)";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($kyc_type_ == 'total_kyc' && $date_range != 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.status = a.status and ${$date_range}) as status from kyc_table a group by(status)";
+    $run_query = mysqli_query($conn,$sql);
+    $status_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.gender = a.gender and ${$date_range}) as gender from kyc_table a group by(gender)";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  if ($kyc_type_ != 'total_kyc' && $date_range != 'ytd') {
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.status = a.status and kyc_type = '{$kyc_type_}' and ${$date_range}) as status from kyc_table a group by(status)";
+    $run_query = mysqli_query($conn,$sql);
+    $status_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+    $sql = "SELECT (SELECT COUNT(*) FROM kyc_table x WHERE x.gender = a.gender and kyc_type = '{$kyc_type_}' and ${$date_range}) as gender from kyc_table a group by(gender)";
+    $run_query = mysqli_query($conn,$sql);
+    $filter_data = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+
+  $kyc_status_data = [
+      'status' => $status_data,
+      'gender' => $filter_data
+    ];
+  echo json_encode($kyc_status_data);
+}
 ### Get Distinct Years of all 1.
 function get_distinct_year($conn){
   include 'flags.php';

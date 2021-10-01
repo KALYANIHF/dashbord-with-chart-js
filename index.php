@@ -252,19 +252,7 @@
             date_range = document.getElementById('date_range').value;
             kyc_type = document.getElementById('kyc_type').value;
             filter_type = document.getElementById('filter_type').value;
-
-            // console.log(flag0, flag1, flag2);
-            // Till YTD
-            // Combination for the first drop down
-            data = JSON.parse(Load_all_Data(date_range,kyc_type,filter_type));
-
-            all_loading_data =  dataSanitize(data);
-            
-            dynamic_TotalData(all_loading_data[0],main_fieldSet,main_colorSet);
-            LeftPieChart(all_loading_data[1],kyc_color_set,kyc_label_set,'kyc by status till YTD');
-            RightPieChart(all_loading_data[2],gender_color_set,gender_label_set,'kyc status by gender till YTD');
-            BottomBarChart(all_loading_data[3],barchart_color_set,all_loading_data[4],'All Kyc DataSheet till YTD');
-            const countElements = document.querySelectorAll('.count');
+            // if the date range is custom date then execute this
             if (date_range == "custom_date") {
                 $('#custom_date').show();
                 document.querySelectorAll(".count").forEach(e=>{
@@ -273,6 +261,17 @@
                 $('.inside,.inside_').hide();
                 $('.error_massage').show();
             }
+            // otherwise execute this
+            else{
+                kyc_type_ = document.getElementById('kyc_type').value;
+                data = JSON.parse(Load_all_Data(date_range,kyc_type,filter_type));
+                all_loading_data =  dataSanitize(data);
+                dynamic_TotalData(all_loading_data[0],main_fieldSet,main_colorSet);
+                LeftPieChart(all_loading_data[1],kyc_color_set,kyc_label_set,`kyc by status till ${date_range} for ${kyc_type_}`);
+                RightPieChart(all_loading_data[2],gender_color_set,gender_label_set,`kyc status by ${filter_type} till ${date_range}`);
+                BottomBarChart(all_loading_data[3],barchart_color_set,all_loading_data[4],'All Kyc DataSheet till YTD');
+            }
+            
         })
         // left drop down
         document.getElementById('kyc_type').addEventListener('change',()=>{
@@ -280,8 +279,10 @@
             date_range = document.getElementById('date_range').value;
             kyc_type = document.getElementById('kyc_type').value;
             filter_type = document.getElementById('filter_type').value;
-            
-            
+            data = JSON.parse(Load_all_Data_UponKycStatus(date_range, kyc_type, filter_type));
+            all_loading_data = dataSanitize_onKycType(data);
+            LeftPieChart(all_loading_data[0],kyc_color_set,kyc_label_set,`kyc by status till ${date_range} for ${kyc_type}`);
+            RightPieChart(all_loading_data[1],gender_color_set,gender_label_set,`kyc status by ${filter_type} till ${date_range}`);
         })
         // right drop down
         document.getElementById('filter_type').addEventListener('change',()=>{
