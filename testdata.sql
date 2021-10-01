@@ -1,0 +1,1 @@
+INSERT INTO kyc_table(kyc_type,status,member_name,gender,marital_status,caste,religion,)

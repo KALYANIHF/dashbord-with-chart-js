@@ -19,7 +19,6 @@ function onload_TotalData(dataSet, fieldSet, colorSet) {
   $(".grid-system").append(dynamic_data);
 }
 function dynamic_TotalData(dataSet, fieldSet, colorSet) {
-  console.log(dataSet);
   $(".grid-system").empty();
   var dynamic_data = "";
   for (let i = 0; i < fieldSet.length; i++) {
@@ -257,7 +256,7 @@ function dataSanitize(data) {
   data["filter_status"].forEach((e) => {
     filter_status.push(e.filter);
   });
-  data["dis_year"].forEach((e) => {
+  data["dis_time"].forEach((e) => {
     dis_year.push(e.dis);
   });
   data["bar_chart_data"].forEach((e) => {

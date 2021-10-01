@@ -257,45 +257,13 @@
             // Till YTD
             // Combination for the first drop down
             data = JSON.parse(Load_all_Data(date_range,kyc_type,filter_type));
-            // FOR // DEBUG:
-            // console.log(data);
-            if (data.length <= 1) {
-              support_data = [
-                // support data for per_kyc
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                // per_kyc data end TODO:
-                // support data for kyc_type
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                // support data kyc_type end TODO:
-                // support data for filter_type
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                {'per_kyc':'0'},
-                // support data for filter_type end TODO:
-              ]
-              data = data.concat(support_data);
-            }
-            if (data.length <= 2) {
-              for (let i = 1; i <= 13; i++) {
-                data.splice(i,0,{'per_kyc':'0'});
-              }
-            }
+
             all_loading_data =  dataSanitize(data);
-            // for // DEBUG:
             
-            console.log(all_loading_data);
             dynamic_TotalData(all_loading_data[0],main_fieldSet,main_colorSet);
             LeftPieChart(all_loading_data[1],kyc_color_set,kyc_label_set,'kyc by status till YTD');
             RightPieChart(all_loading_data[2],gender_color_set,gender_label_set,'kyc status by gender till YTD');
-            BottomBarChart([],barchart_color_set,all_loading_data[3],'All Kyc DataSheet till YTD');
+            BottomBarChart(all_loading_data[3],barchart_color_set,all_loading_data[4],'All Kyc DataSheet till YTD');
             const countElements = document.querySelectorAll('.count');
             if (date_range == "custom_date") {
                 $('#custom_date').show();
@@ -309,46 +277,15 @@
         // left drop down
         document.getElementById('kyc_type').addEventListener('change',()=>{
             $('#filter_type').prop('selectedIndex',0);
-
-            // for the all kyc type
-            if (flag1 === 1) {
-                LeftPieChart([50,30,17,25,35],['green','yellow','pink','red','royalblue'],['Self','Shg','Mfg','Organization','Jlg'],'kyc by status');
-            }
-            // self
-            if (flag1 === 2) {
-                LeftPieChart([50],['green','white'],['Self'],'kyc by self');
-            }
-            // shg
-            if (flag1 === 3) {
-                LeftPieChart([30,(100-30)],['yellow','white'],['Shg'],'kyc by shg');
-            }
-            // mfg
-            if (flag1 === 4) {
-                LeftPieChart([17,(100-17)],['pink','white'],['Mfg'],'kyc by mfg');
-            }
-            // organization
-            if (flag1 === 5) {
-                LeftPieChart([25,(100-25)],['red','white'],['Organization'],'kyc by organization');
-            }
-            // jlg
-            if (flag1 === 6) {
-                LeftPieChart([35,(100-35)],['royalblue','white'],['Jlg'],'kyc by jlg');
-            }
+            date_range = document.getElementById('date_range').value;
+            kyc_type = document.getElementById('kyc_type').value;
+            filter_type = document.getElementById('filter_type').value;
+            
+            
         })
         // right drop down
         document.getElementById('filter_type').addEventListener('change',()=>{
-            if (flag2 === 1) {
-                RightPieChart([45,30,12],['green','yellow','pink'],['Male','Female','Transgender'],"self kyc by gender");
-            }
-            if (flag2 === 2) {
-                RightPieChart([50,40,18,20,25],['lime','royalblue','pink','green','yellow'],['ST','SC','OBC','GENERAL','MINORITY'],"self kyc by Caste");
-            }
-            if (flag2 === 3) {
-                RightPieChart([60,50,45,100],['royalblue','green','lime','yellow'],['Hindu','Muslim','Christian','Others'],"self kyc by religion");
-            }
-            if (flag2 === 4) {
-                RightPieChart([60,50,45],['black','green','lime'],['Marrid','Unmarrid','Others'],"self kyc by marital status");
-            }
+            
         });
         // On custom data data value
         document.getElementById('check_date').addEventListener('click',(e)=>{
