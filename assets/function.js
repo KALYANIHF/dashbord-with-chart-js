@@ -191,12 +191,12 @@ function BottomBarChart(dataSet, colorSet, labelSet, text) {
           data: dataSet[2],
         },
         {
-          label: "organization",
+          label: "jlg",
           backgroundColor: `${colorSet[3]}`,
           data: dataSet[3],
         },
         {
-          label: "jlg",
+          label: "organization",
           backgroundColor: `${colorSet[4]}`,
           data: dataSet[4],
         },
@@ -388,7 +388,7 @@ function Load_all_Data(
   start_date = "",
   end_date = ""
 ) {
-  return Ajax_Call(date_range, kyc_type, filter_type);
+  return Ajax_Call(date_range, kyc_type, filter_type, start_date, end_date);
 }
 
 function Load_all_Data_UponKycStatus(
@@ -398,7 +398,7 @@ function Load_all_Data_UponKycStatus(
   start_date = "",
   end_date = ""
 ) {
-  return Ajax_call2(date_range, kyc_type, filter_type);
+  return Ajax_call2(date_range, kyc_type, filter_type, start_date, end_date);
 }
 
 function Load_all_Data_UponFilter(
@@ -408,6 +408,5 @@ function Load_all_Data_UponFilter(
   start_date = "",
   end_date = ""
 ) {
-  return Ajax_call3(date_range, kyc_type, filter_type);
+  return Ajax_call3(date_range, kyc_type, filter_type, start_date, end_date);
 }
-

@@ -191,14 +191,14 @@
             '#51355a',
             '#2a0c4e'
         ]
-        barchart_color_set = ['#d72638','#3f88c5','#f49d37','#140f2d','#f22b29']
+        barchart_color_set = ['#d72638','#3f88c5','#f49d37','#f22b29','#140f2d']
         kyc_label_set = ['approve','reject','pending','seek clarification'];
         gender_label_set = ['Male','Female','Transgender','Mixed'];
         caste_label_set = ['st','sc','obc','general','minority'];
         religion_label_set = ['hindu','muslim','christian','others'];
         marital_label_set = ['married','unmarried','others'];
         kyc_barchart_label = ['Self','Shg','Mfg','Organization','Jlg'];
-        main_fieldSet = ["total_kyc","self","shg","mfg","organization","jlg"];
+        main_fieldSet = ["total_kyc","self","shg","mfg","jlg","organization"];
         // main_fieldSet = ["alpha","beta","gama","delta","nano","pico","sudo","ls"];
         main_colorSet = ['#555','#d72638','#3f88c5','#f49d37','#140f2d','#f22b29'];
         // main_colorSet = ['#555','#d72638','#3f88c5','#f49d37','#140f2d','#140f36','#140f9d','#0f0'];
@@ -214,7 +214,7 @@
             $('.error_massage').hide();
             $('#custom_date').hide();
             //dynamic data call
-            
+            sessionStorage.clear();
             data = JSON.parse(Load_all_Data(date_range,kyc_type,filter_type));
             // console.log(data);
             dataSanitize(data);
@@ -257,12 +257,18 @@
     <script>
         // total data value change
         document.getElementById('date_range').addEventListener('change',()=>{
+            $("#start_date").val("");
             $('#kyc_type').prop('selectedIndex',0);
             $('#filter_type').prop('selectedIndex',0);
             date_range = document.getElementById('date_range').value;
             kyc_type = document.getElementById('kyc_type').value;
             filter_type = document.getElementById('filter_type').value;
+                $('#custom_date').hide();
+                $('.inside,.inside_').show();
+                $('.error_massage').hide();
             // if the date range is custom date then execute this
+            // clear session stroage
+            sessionStorage.clear();
             if (date_range == "custom_date") {
                 $('#custom_date').show();
                 document.querySelectorAll(".count").forEach(e=>{
@@ -289,7 +295,10 @@
             date_range = document.getElementById('date_range').value;
             kyc_type = document.getElementById('kyc_type').value;
             filter_type = document.getElementById('filter_type').value;
-            data = JSON.parse(Load_all_Data_UponKycStatus(date_range, kyc_type, filter_type));
+            // TODO: FIXME:
+            // console.log(sessionStorage.getItem('start_date'));
+            // console.log(sessionStorage.getItem('end_date'));
+            data = JSON.parse(Load_all_Data_UponKycStatus(date_range, kyc_type, filter_type,sessionStorage.getItem('start_date'),sessionStorage.getItem('end_date')));
             all_loading_data = dataSanitize_onKycType(data);
             LeftPieChart(all_loading_data[0],kyc_color_set,kyc_label_set,`kyc by status till ${date_range} for ${kyc_type}`);
             RightPieChart(all_loading_data[1],gender_color_set,gender_label_set,`kyc status by ${filter_type} till ${date_range}`);
@@ -299,7 +308,7 @@
             date_range = document.getElementById('date_range').value;
             kyc_type = document.getElementById('kyc_type').value;
             filter_type = document.getElementById('filter_type').value;
-            data = JSON.parse(Load_all_Data_UponFilter(date_range, kyc_type, filter_type));
+            data = JSON.parse(Load_all_Data_UponFilter(date_range, kyc_type, filter_type,sessionStorage.getItem('start_date'),sessionStorage.getItem('end_date')));
             kyc_filter_data = dataSanitize_onFilter(data);
             if (filter_type == 'gender') {
                 RightPieChart(kyc_filter_data,gender_color_set,gender_label_set,`kyc status by ${filter_type} till ${date_range}`);
@@ -318,6 +327,9 @@
         document.getElementById('check_date').addEventListener('click',(e)=>{
             const start_date = document.querySelector('#start_date').value;
             const end_date = document.querySelector('#end_date').value;
+            // make this two as session varibale 
+            sessionStorage.setItem('start_date',start_date);
+            sessionStorage.setItem('end_date',end_date);
             // check if the date is empty or not
             if (start_date == null || start_date == '') {
                 e.preventDefault();
@@ -329,16 +341,14 @@
                 $('.inside,.inside_').show();
                 $('.error_massage').hide();
                 // attach two extra arguments start_date and end_date
-                let data = Ajax_Call(flag0,flag1,flag2,start_date,end_date);
-                let sanitize_data = dataSanitize(data);
+                data = JSON.parse(Load_all_Data(date_range,kyc_type,filter_type,start_date,end_date));
+                all_loading_data =  dataSanitize(data);
+                // console.log(all_loading_data);
                 // =========== all the chart data
-                let total_count = sanitize_data.slice(0,6);
-                let left_pie_chart = sanitize_data.slice(6,10);
-                let right_pie_chart = sanitize_data.slice(10);
-                dynamic_TotalData(total_count,main_fieldSet,main_colorSet);
-                LeftPieChart(left_pie_chart,kyc_color_set,kyc_label_set,`All Kyc DataSheet Between ${start_date} and ${end_date}`);
-                RightPieChart(right_pie_chart,gender_color_set,gender_label_set,`All Kyc DataSheet Between ${start_date} and ${end_date}`);
-                BottomBarChart([40,25,25,15,15],barchart_color_set,kyc_barchart_label,`All Kyc DataSheet Between ${start_date} and ${end_date}`);
+                dynamic_TotalData(all_loading_data[0],main_fieldSet,main_colorSet);
+                LeftPieChart(all_loading_data[1],kyc_color_set,kyc_label_set,`All Kyc DataSheet Between ${start_date} and ${end_date}`);
+                RightPieChart(all_loading_data[2],gender_color_set,gender_label_set,`All Kyc DataSheet Between ${start_date} and ${end_date}`);
+                BottomBarChart(all_loading_data[3],barchart_color_set,all_loading_data[4],`All Kyc DataSheet Between ${start_date} and ${end_date}`);
             }
         })
     </script>
@@ -381,10 +391,11 @@
             document.getElementById("table_heading").innerHTML = `<h2 class="text-info table-heading">Netware ${arg} Content Table</h2>
             <h4 id="chart-figure-type" class="type">Your Login Date and Time : ${(new Date().toLocaleString("en-US", {timeZone:"Asia/Kolkata"}))} </h4>`;
             dynamic_tableData = '';
+            var i = 0;
             data.forEach(e => {
                 dynamic_tableData+=`
                 <tr>
-                    <td>${e.kyc_id}</td>
+                    <td>${++i}</td>
                     <td>${e.kyc_type}</td>
                     <td>${e.status}</td>
                     <td>${e.member_name}</td>

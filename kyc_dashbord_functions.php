@@ -1,7 +1,7 @@
 <?php
 include 'conn.php';
 // onload total data
-function count_specific_kyc($conn,$date_range,$kyc_type,$filter_type,$date_spliter=[],$start_date = "",$end_date = ""){
+function count_specific_kyc($conn,$date_range,$kyc_type,$filter_type,$start_date = "",$end_date = ""){
   include 'flags.php';
   // one Exception if the date range is YTD
   if ($date_range == 'ytd') {
@@ -38,6 +38,7 @@ function count_specific_kyc($conn,$date_range,$kyc_type,$filter_type,$date_split
     ];
     echo json_encode($data_as_JSON);
   }
+  
   else{
     $data_as_JSON =[];
     $sql = "SELECT COUNT(*) as per_kyc FROM kyc_table WHERE ${$date_range}";
@@ -105,6 +106,39 @@ function count_specific_kyc($conn,$date_range,$kyc_type,$filter_type,$date_split
         array_push($bar_chart_data,$result);
       }
     }
+
+    // TODO: FIXME:
+    if ($date_range == 'custom_date') {
+      // calculate the time preiod between two days
+      $dis_time = get_timePreoid_between_two_Days($conn,$start_date,$end_date);
+      $bar_chart_data = [];
+      // check if the return labels are days , months or year via regular exp
+      if (preg_match("/\d{4}\-\d{2}-\d{2}$/", $dis_time[0]['dis'])) {
+        foreach ($dis_time as $val) {
+          $sql = "select a.kyc_type,(select count(*) from kyc_table x where x.kyc_type = a.kyc_type and date(created_at) = '{$val['dis']}') as count from kyc_table a group by(kyc_type)";
+          $run_query = mysqli_query($conn,$sql);
+          $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+          array_push($bar_chart_data,$result);
+        }
+      }
+      if (checkMonth($dis_time[0]['dis'])) {
+        foreach ($dis_time as $val) {
+          $sql = "select a.kyc_type,(select count(*) from kyc_table x where x.kyc_type = a.kyc_type and monthname(created_at) = '{$val['dis']}') as count from kyc_table a group by(kyc_type)";
+          $run_query = mysqli_query($conn,$sql);
+          $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+          array_push($bar_chart_data,$result);
+        }
+      }
+      if(preg_match("/\d{4}$/",$dis_time[0]['dis'])){
+        foreach ($dis_time as $val) {
+          $sql = "select a.kyc_type,(select count(*) from kyc_table x where x.kyc_type = a.kyc_type and YEAR(created_at) = '{$val['dis']}') as count from kyc_table a group by(kyc_type)";
+          $run_query = mysqli_query($conn,$sql);
+          $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+          array_push($bar_chart_data,$result);
+        }
+      }
+    }
+
     $data_as_JSON =[
       'per_kyc' => $per_kyc,
       'kyc_status' => $kyc_status,
@@ -116,8 +150,88 @@ function count_specific_kyc($conn,$date_range,$kyc_type,$filter_type,$date_split
   }
 }
 
+function checkMonth($month)
+{
+  $array_month = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July ',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',];
+    foreach ($array_month as $chek_month) {
+      if ($chek_month == $month) {
+        return true;
+        break;
+      }
+    }
+    return false;
+}
+// get time preoid between two days
+function get_timePreoid_between_two_Days($conn,$start_date,$end_date){
+  $start_date_time = strtotime($start_date);
+  $end_date_time = strtotime($end_date);
+  $diff_bwt = $end_date_time - $start_date_time;
+  $num_of_days = round($diff_bwt/(60*60*24));
+  if ($num_of_days <= 30 || $num_of_days <= 31) {
+    $sql = "SELECT DATE(NOW()) as dis UNION ";
+    for ($i=1; $i < $num_of_days; $i++) { 
+      if ($i == $num_of_days - 1) {
+        $sql .= " SELECT DATE(NOW()) - INTERVAL ". $i ." DAY ";
+        break;
+      }
+      $sql .= "SELECT DATE(NOW()) - INTERVAL ". $i ." DAY as dis UNION ";
+    }
+    $run_query = mysqli_query($conn,$sql);
+    $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+
+  if (($num_of_days > 30 && $num_of_days < 365) || ($num_of_days > 31 && $num_of_days < 365)) {
+    $month = round($num_of_days / 30);
+    // FOR Debug only
+    // echo $month . " ";
+    // $remain_days = round($num_of_days % 30);
+    // echo $remain_days;
+    $sql = "SELECT MONTHNAME(NOW()) as dis UNION ";
+    for ($i=1; $i < $month; $i++) { 
+      if ($i == $month - 1) {
+        $sql .= "SELECT MONTHNAME(NOW() - INTERVAL ".$i." month) ";
+        break;
+      }
+      $sql .= " SELECT MONTHNAME(NOW() - INTERVAL ".$i." month) as dis UNION ";
+    }
+    $run_query = mysqli_query($conn,$sql);
+    $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+
+  if ($num_of_days > 365) {
+    $year = round($num_of_days / 365);
+    $sql = "SELECT YEAR(NOW()) as dis UNION ";
+    for ($i=1; $i < $year; $i++) { 
+      if ($i == $year - 1) {
+        $sql .= "SELECT YEAR(NOW() - INTERVAL ".$i." year)";
+        break;
+      }
+      $sql .= "SELECT YEAR(NOW() - INTERVAL ".$i." year) as dis UNION ";
+    }
+    // FOR Debug only
+    // echo $month . " ";
+    // $remain_days = round($num_of_days % 30);
+    // echo $remain_days;
+    $run_query = mysqli_query($conn,$sql);
+    $result = mysqli_fetch_all($run_query,MYSQLI_ASSOC);
+  }
+  return $result;
+}
+
 ### function count on kyc status
-function count_kyc_Status($conn,$date_range,$kyc_type_,$filter_type,$date_spliter=[],$start_date = "",$end_date = ""){
+function count_kyc_Status($conn,$date_range,$kyc_type_,$filter_type,$start_date = "",$end_date = ""){
 
   include 'flags.php';
   // first query
@@ -163,7 +277,7 @@ function count_kyc_Status($conn,$date_range,$kyc_type_,$filter_type,$date_splite
 }
 
 // ### count by filter of the elmeent
-function count_kyc_byFilter($conn,$date_range,$kyc_type_,$filter_type,$date_spliter=[],$start_date = "",$end_date = ""){
+function count_kyc_byFilter($conn,$date_range,$kyc_type_,$filter_type,$start_date = "",$end_date = ""){
   include 'flags.php';
 
   if ($kyc_type_ == 'total_kyc' && $date_range == 'ytd') {
@@ -270,8 +384,10 @@ function get_distinctMonth_for_12_Month($conn){
   return $result;
 }
 
+// have to meve here FIXME:
+
 // ### define the function for the total table data
-function getTotal_TableData($conn,$date_range,$kyc_type_,$date_spliter=[],$start_date = "",$end_date = ""){
+function getTotal_TableData($conn,$date_range,$kyc_type_,$start_date = "",$end_date = ""){
   include 'flags.php';
 
   if ($kyc_type_ == 'organization') {
@@ -300,4 +416,5 @@ function getTotal_TableData($conn,$date_range,$kyc_type_,$date_spliter=[],$start
   }
   echo json_encode($result);
 }
+
 ?>

@@ -4,4 +4,4 @@ include 'conn.php';
 // $staff_id=verifyAutho();
 $requestData = $_REQUEST;
 include './kyc_dashbord_functions.php';
-count_kyc_byFilter($conn,$requestData['date_range'],$requestData['kyc_type'],$requestData['filter_type']);
+count_kyc_byFilter($conn,$requestData['date_range'],$requestData['kyc_type'],$requestData['filter_type'],$requestData['start_date'],$requestData['end_date']);
