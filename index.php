@@ -433,7 +433,7 @@
             `;
             $('#data_table').DataTable({
                 "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                "scrollY": 420,
+                "scrollY": 400,
             });
         }
         document.querySelector('.close').addEventListener('click',()=>{
