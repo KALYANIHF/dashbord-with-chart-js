@@ -36,7 +36,6 @@ body {
 .sub_grid {
   background-repeat: no-repeat;
   background-position: -200px -200px, 0 0;
-
   background-image: -webkit-linear-gradient(
     top left,
     rgba(255, 255, 255, 0.2) 0%,
