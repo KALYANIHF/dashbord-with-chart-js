@@ -5,4 +5,4 @@ include 'conn.php';
 $requestData = $_REQUEST;
 include './kyc_dashbord_functions.php';
 
-getTotal_TableData($conn,$requestData['date_range'],$requestData['kyc_type']);
+getTotal_TableData($conn,$requestData['date_range'],$requestData['kyc_type'],$requestData['start_date'],$requestData['end_date']);

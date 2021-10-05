@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col-sm-8 col-md-8">
                 <div class="chart-title">
-                    <h5 id="chart-figure" class="display-4" class="figure">Netware KYC DashBord Status</h5>
+                    <h5 id="chart-figure" class="display-4" class="figure">DashBord Status</h5>
                     <h3 id="chart-figure-type" class="type">Your Login Date and Time: <script>document.write(new Date().toLocaleString("en-US", {timeZone:
                         "Asia/Kolkata"}))</script></h3>
                 </div>
@@ -150,7 +150,7 @@
         <div class="footer p-3 bg-secondary">
             <div class="container">
                 <div class="content_footer">
-                    <h6 class="letter_space">Netware All Right Reserved &copy; <script>document.write(new Date().getFullYear())</script></h6>
+                    <h6 class="letter_space">All Right Reserved &copy; <script>document.write(new Date().getFullYear())</script></h6>
                 </div>
             </div>
         </div>
@@ -379,16 +379,20 @@
             start_date = "",
             end_date = ""
             ) {
-            return Ajax_call4(date_range, kyc_type, filter_type);
+            return Ajax_call4(date_range, kyc_type,start_date,end_date);
         }
 
         function table_heading(arg){
             date_range = document.getElementById('date_range').value;
             kyc_type = arg;
             filter_type = document.getElementById('filter_type').value;
-            data = JSON.parse(Load_all_TableData(date_range,kyc_type));
-            console.log(data);
-            document.getElementById("table_heading").innerHTML = `<h2 class="text-info table-heading">Netware ${arg} Content Table</h2>
+            if (date_range != 'custom_date') {
+                data = JSON.parse(Load_all_TableData(date_range,kyc_type));
+            }else{
+                data = JSON.parse(Load_all_TableData(date_range,kyc_type,sessionStorage.getItem('start_date'),sessionStorage.getItem('end_date')));
+            }
+            // console.log(data);
+            document.getElementById("table_heading").innerHTML = `<h2 class="text-info table-heading">${arg} Content Table</h2>
             <h4 id="chart-figure-type" class="type">Your Login Date and Time : ${(new Date().toLocaleString("en-US", {timeZone:"Asia/Kolkata"}))} </h4>`;
             dynamic_tableData = '';
             var i = 0;
