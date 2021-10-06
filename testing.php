@@ -34,11 +34,16 @@ if (htmlspecialchars(isset($_POST['submit']))) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testing Form</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <style>
+        .display-4{
+            font-size: 40px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="heading p-4 text-center">
-            <h3>Form for the DashBord (Only For Testing)</h3>
+            <h3 class="display-4">Form for the DashBord (Only For Testing)</h3>
         </div>
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
             <div class="form-group">
