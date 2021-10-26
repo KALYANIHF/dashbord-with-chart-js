@@ -162,7 +162,7 @@ function BottomBarChart(dataSet, colorSet, labelSet, text) {
   canvas.id = "myChart3";
   document.getElementById("dynamic_barchart").appendChild(canvas);
   var ctx = document.getElementById("myChart3").getContext("2d");
-  Chart.defaults.global.defaultFontSize = 16;
+  Chart.defaults.global.defaultFontSize = 12;
   // break data
   let data0 = dataSet[0];
   let data1 = dataSet[1];
